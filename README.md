@@ -44,3 +44,4 @@ streamlit run app.py
 
 ## Wiki (PT-PT)
 - Documentacao detalhada de utilizacao: `docs/WIKI_PT-PT.md`
+- Guia focado no utilizador investidor: `docs/GUIA_INVESTIDOR_PT-PT.md`
