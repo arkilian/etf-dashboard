@@ -2,12 +2,17 @@
 
 from __future__ import annotations
 
+import contextlib
+import io
+import logging
 from functools import lru_cache
 from pathlib import Path
 from typing import Iterable
 
 import pandas as pd
 import yfinance as yf
+
+logging.getLogger("yfinance").setLevel(logging.CRITICAL)
 
 DATA_DIR = Path(__file__).resolve().parent / "data" / "etf_lists"
 CSV_EXTENSION = ".csv"
@@ -159,9 +164,13 @@ def fetch_yfinance_snapshot(symbol: str) -> dict[str, object]:
     if not symbol:
         return _empty_snapshot(symbol)
 
-    ticker = yf.Ticker(symbol)
-    info = _safe_get_info(ticker)
-    fast_info = _safe_get_fast_info(ticker)
+    try:
+        with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+            ticker = yf.Ticker(symbol)
+            info = _safe_get_info(ticker)
+            fast_info = _safe_get_fast_info(ticker)
+    except Exception:
+        return _empty_snapshot(symbol)
 
     return {
         "yfinance_symbol": symbol,

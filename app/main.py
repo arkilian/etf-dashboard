@@ -1,14 +1,20 @@
-"""Main entrypoint for the modular ETF dashboard."""
+"""Compatibility entrypoint that runs the root-level app.py."""
 
 from __future__ import annotations
 
-import streamlit as st
+import importlib.util
+import sys
+from pathlib import Path
 
-try:
-    from app.pages.overview import render
-except ModuleNotFoundError:
-    from pages.overview import render
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+ROOT_APP_PATH = PROJECT_ROOT / "app.py"
 
-st.set_page_config(page_title="ETF Dashboard", layout="wide")
-render()
+# Ensure root-level modules (data_loader, metrics_engine, etc.) are importable.
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
 
+spec = importlib.util.spec_from_file_location("root_streamlit_app", ROOT_APP_PATH)
+assert spec and spec.loader
+module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(module)
+module.render()

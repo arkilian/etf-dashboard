@@ -281,16 +281,45 @@ def _build_table_style(dataframe: pd.DataFrame) -> pd.io.formats.style.Styler:
     styled = dataframe.style.format(formatters, na_rep="-")
 
     if "quality_score" in dataframe.columns:
-        styled = styled.background_gradient(cmap="RdYlGn", subset=["quality_score"], vmin=0, vmax=10)
+        styled = styled.apply(_quality_score_style, subset=["quality_score"])
     if "risk_score" in dataframe.columns:
-        styled = styled.background_gradient(
-            cmap="RdYlGn_r",
-            subset=["risk_score"],
-            vmin=0,
-            vmax=max(1, int(dataframe["risk_score"].max())),
-        )
+        styled = styled.apply(_risk_score_style, subset=["risk_score"])
 
     return styled
+
+
+def _quality_score_style(series: pd.Series) -> list[str]:
+    """Color quality score cells without matplotlib dependency."""
+    styles: list[str] = []
+    for value in series:
+        if value is None or pd.isna(value):
+            styles.append("")
+            continue
+        numeric = float(value)
+        if numeric >= 8:
+            styles.append("background-color: #d1fae5; color: #065f46;")
+        elif numeric >= 5:
+            styles.append("background-color: #fef3c7; color: #92400e;")
+        else:
+            styles.append("background-color: #fee2e2; color: #991b1b;")
+    return styles
+
+
+def _risk_score_style(series: pd.Series) -> list[str]:
+    """Color risk score cells without matplotlib dependency."""
+    styles: list[str] = []
+    for value in series:
+        if value is None or pd.isna(value):
+            styles.append("")
+            continue
+        numeric = float(value)
+        if numeric <= 1:
+            styles.append("background-color: #d1fae5; color: #065f46;")
+        elif numeric <= 3:
+            styles.append("background-color: #fef3c7; color: #92400e;")
+        else:
+            styles.append("background-color: #fee2e2; color: #991b1b;")
+    return styles
 
 
 def _format_summary_table(dataframe: pd.DataFrame) -> pd.DataFrame:
