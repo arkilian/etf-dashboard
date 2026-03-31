@@ -1,26 +1,33 @@
 # ETF Dashboard
 
-Streamlit dashboard for ETF holdings analysis.
+Streamlit dashboard for ETF holdings analysis with scoring, tagging, and reusable investment filters.
 
 ## Stack
 - Python 3.11+
 - Streamlit
 - pandas
 - yfinance
+- plotly
 
-## Current Features
+## Features
 - Discover ETF CSV files from `data/etf_lists/`
-- Load holdings for one or multiple ETFs
-- Parse localized numeric formats (for example `550 769 537,60`)
-- Enrich holdings with market fields from yfinance
-- Filter by sector, country, weight, and market cap
-- Show a holdings table and summary KPIs
+- Load one or multiple ETFs into a unified holdings dataset
+- Enrich holdings with cached yfinance market and financial statement data
+- Compute financial metrics such as P/E, ROIC proxy, margins, growth, FCF, leverage, and beta
+- Score each company with `quality_score` and `risk_score`
+- Generate tags such as `High Quality`, `Cash Machine`, `Speculative`, and `Expensive`
+- Filter holdings by sector, country, weight, market cap, tags, and investment styles
+- Show ETF-level analysis and the top companies by score
 
 ## Project Structure
-- `app/data_sources/etf_holdings.py`: ETF CSV discovery and loading
-- `app/data_sources/yfinance_client.py`: yfinance enrichment helpers
-- `app/pages/overview.py`: dashboard page with filters and table
-- `data/etf_lists/`: holdings CSV files
+- `data_loader.py`: ETF data loading and yfinance enrichment
+- `metrics_engine.py`: normalized financial metrics
+- `scoring.py`: quality and risk scoring
+- `tags.py`: investment tag generation
+- `filters.py`: reusable investment filters
+- `app.py`: Streamlit UI and dashboard orchestration
+- `app/main.py`: compatibility entrypoint for the root app
+- `data/etf_lists/`: source ETF holdings CSV files
 
 ## Setup
 ```bash
@@ -32,5 +39,5 @@ pip install -r requirements.txt
 
 ## Run
 ```bash
-streamlit run app/main.py
+streamlit run app.py
 ```
