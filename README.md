@@ -41,3 +41,6 @@ pip install -r requirements.txt
 ```bash
 streamlit run app.py
 ```
+
+## Wiki (PT-PT)
+- Documentacao detalhada de utilizacao: `docs/WIKI_PT-PT.md`
